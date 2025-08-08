@@ -19,7 +19,7 @@ def check_winner(board: list, player_symbol: str) -> bool:
     lines = []
 
     # строки и столбцы
-    lines.extend(board)  # строки
+    lines.extend(board)
     lines.extend([[board[r][c] for r in range(3)] for c in range(3)])  # столбцы
 
     # диагонали

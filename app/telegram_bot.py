@@ -1,109 +1,72 @@
 import telebot
 from telebot.types import Message
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import BotCommand
 
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
-from app.work_with_inline import callback_handler
-from app.add_user_in_game import *
 from app.config import API_KEY
-from app.generate_game_key import generate_game_key
+from app.create_game import create
+from app.join_game import join
+from app.delete_game import delete
+from app.work_with_inline import callback_handler
+
+from app.add_user_in_game import *
 from app.game_logic import *
-from app.work_with_keyboard import *
+from app.message_text import *
+from app.utils import create_board_keyboard
 
 bot = telebot.TeleBot(API_KEY)
+
+# Настройка списка команд для меню бота в Telegram
+commands = [
+    BotCommand("start", "Приветственное сообщение"),
+    BotCommand("help", "Список команд и инструкция"),
+    BotCommand("create", "Создать новую игру"),
+    BotCommand("join", "Присоединиться к игре"),
+    BotCommand("delete", "Удалить свою игру"),
+    BotCommand("github", "Ссылка на GitHub проекта")
+]
+# Словарь для хранения всех активных игр
 active_games = {}
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/start'))
 def start(message: Message) -> None:
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="👋 Привет! Это бот *Крестики-Нолики*!\n\n"
-             "📌 Доступные команды:\n"
-             "/create — создать новую игру\n"
-             "/join — присоединиться к игре по коду\n"
-             "/help — помощь по командам",
-        parse_mode="Markdown"
-    )
+    # Обрабатывает команду /start — отправляет приветственное сообщение
+    bot.send_message(message.chat.id, START_TEXT, parse_mode="Markdown")
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/help'))
 def help(message: Message) -> None:
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="🆘 Помощь:\n\n"
-             "/create — создаёт новую игру и выдаёт уникальный код\n"
-             "/join — подключение к существующей игре по коду\n\n"
-             "Передай другу код игры, чтобы он подключился к тебе!",
-    )
+    # Обрабатывает команду /help — отправляет список команд и инструкцию
+    bot.send_message(message.chat.id, HELP_TEXT, parse_mode="Markdown")
+
+
+@bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/github'))
+def send_my_github(message: Message) -> None:
+    # Обрабатывает команду /github — отправляет ссылку на исходный код бота
+    bot.send_message(message.chat.id, GITHUB_LINK_TEXT)
+
+
+@bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/delete'))
+def handle_delete(message):
+    # Обрабатывает команду /leave — позволяет игроку удалить свою игру
+    delete(message, bot, active_games)
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/create'))
-def create(message: Message) -> None:
-    user_id = message.from_user.id
-    user_name = message.from_user.username if message.from_user.username is not None else 'Анонимный игрок'
-
-    if is_user_in_game(user_id, active_games):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="⚠️ Вы уже участвуете в другой игре."
-        )
-        return
-
-    game_key = generate_game_key()
-    active_games[game_key] = {
-        "players_id": [user_id],
-        "players_name": [user_name],
-        "board": start_game(),
-        "turn": user_id,
-        "symbols": {user_id: '❌'},
-        "messages": {}
-    }
-
-    print(f'[+] {user_name} создал игру {game_key}')
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=f"✅ Игра создана!\n"
-             f"🔑 Код: *{game_key}*\n"
-             f"Отправь этот код другу, чтобы он присоединился!",
-        parse_mode="Markdown"
-    )
+def handle_create(message: Message) -> None:
+    # Обрабатывает команду /create — создаёт новую игру
+    create(message, bot, active_games)
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/join'))
-def join(message: Message) -> None:
-    user_id = message.from_user.id
-
-    if is_user_in_game(user_id, active_games):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="⚠️ Вы уже участвуете в другой игре."
-        )
-        return
-
-    if active_games:
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        for game_key in active_games.keys():
-            btn = KeyboardButton(text=game_key)
-            keyboard.add(btn)
-
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="🎮 Выберете игру:",
-            reply_markup=keyboard
-        )
-        bot.register_next_step_handler(message, lambda msg: add_user(msg, bot, active_games))
-
-    else:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="📭 Сейчас нет активных игр"
-        )
+def handle_join(message):
+    # Обрабатывает команду /join — показывает список игр и подключает игрока
+    join(message, bot, active_games, add_user)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
+    # Обрабатывает нажатия на inline-кнопки
     callback_handler(
         call,
         bot,
@@ -113,5 +76,8 @@ def handle_callback(call):
         check_draw
     )
 
+
 def main():
+    # Запускает бота в режиме постоянного опроса Telegram API
+    bot.set_my_commands(commands)
     bot.polling(none_stop=True)
