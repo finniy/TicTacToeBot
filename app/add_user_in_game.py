@@ -1,17 +1,18 @@
 from telebot.types import Message
 
+from app.bot_instance import bot, active_games
 from app.utils import is_user_in_game, create_board_keyboard
 from app.message_text import *
 
 
 # Добавление пользователя в игру
-def add_user(message: Message, bot, active_games: dict) -> None:
+def add_user(message: Message) -> None:
     user_id = message.from_user.id  # ID присоединившегося пользователя
     game_key_entered = message.text.strip().upper()  # Код игры, введённый пользователем
     joiner_user_name = message.from_user.username if message.from_user.username else 'Анонимный игрок'
 
     # Если пользователь уже играет — отказ
-    if is_user_in_game(user_id, active_games):
+    if is_user_in_game(user_id):
         bot.send_message(
             chat_id=message.chat.id,
             text=YOU_IN_ANOTHER_GAME

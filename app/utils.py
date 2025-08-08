@@ -2,10 +2,11 @@ import random
 import string
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from app.bot_instance import active_games
 
 
 # Проверяем, участвует ли пользователь в активной игре
-def is_user_in_game(user_id: int, active_games: dict) -> bool:
+def is_user_in_game(user_id: int) -> bool:
     for game in active_games.values():
         if user_id in game["players_id"]:  # если пользователь в списке игроков
             return True

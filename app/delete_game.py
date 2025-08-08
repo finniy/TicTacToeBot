@@ -1,9 +1,10 @@
 from telebot.types import Message
 
+from app.bot_instance import bot, active_games
 from app.message_text import *
 
 
-def delete(message: Message, bot, active_games):
+def delete(message: Message):
     user_id = message.from_user.id
 
     # Найти игру, созданную этим пользователем

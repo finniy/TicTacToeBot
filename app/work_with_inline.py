@@ -1,9 +1,12 @@
 from telebot.types import CallbackQuery
 
+from app.bot_instance import bot, active_games
+from app.utils import create_board_keyboard
+from app.game_logic import check_winner, check_draw
 from app.message_text import *
 
 
-def callback_handler(call: CallbackQuery, bot, active_games: dict, create_board_keyboard, check_winner, check_draw):
+def callback_handler(call: CallbackQuery):
     data = call.data  # данные из нажатой inline-кнопки
 
     try:

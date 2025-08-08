@@ -1,13 +1,14 @@
 from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
+from app.bot_instance import bot, active_games
 from app.add_user_in_game import is_user_in_game
 from app.message_text import *
 
 
-def join(message: Message, bot, active_games, add_user):
+def join(message: Message, add_user):
     user_id = message.from_user.id
 
-    if is_user_in_game(user_id, active_games):  # проверяем, есть ли пользователь в игре
+    if is_user_in_game(user_id):  # проверяем, есть ли пользователь в игре
         bot.send_message(
             chat_id=message.chat.id,
             text=YOU_IN_ANOTHER_GAME
@@ -25,7 +26,7 @@ def join(message: Message, bot, active_games, add_user):
             text=TAKE_GAME,
             reply_markup=keyboard  # отправляем клавиатуру с играми
         )
-        bot.register_next_step_handler(message, lambda msg: add_user(msg, bot, active_games))  # следующий обработчик
+        bot.register_next_step_handler(message, add_user)  # следующий обработчик
 
     else:  # если активных игр нет
         bot.send_message(

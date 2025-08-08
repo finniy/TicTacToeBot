@@ -1,5 +1,6 @@
 from telebot.types import Message
 
+from app.bot_instance import bot, active_games
 from app.utils import generate_game_key
 from app.game_logic import start_game
 from app.add_user_in_game import is_user_in_game
@@ -7,12 +8,12 @@ from app.message_text import YOU_IN_ANOTHER_GAME, YOU_CREATE_GAME
 
 
 # Функция для создания новой игры
-def create(message: Message, bot, active_games) -> None:
+def create(message: Message) -> None:
     user_id = message.from_user.id
     user_name = message.from_user.username if message.from_user.username else 'Анонимный игрок'
 
     # Проверяем, не находится ли игрок уже в другой игре
-    if is_user_in_game(user_id, active_games):
+    if is_user_in_game(user_id):
         bot.send_message(
             chat_id=message.chat.id,
             text=YOU_IN_ANOTHER_GAME
