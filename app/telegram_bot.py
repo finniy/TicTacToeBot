@@ -1,8 +1,14 @@
 import telebot
 from telebot.types import Message
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+from app.work_with_inline import callback_handler
+from app.add_user_in_game import *
 from app.config import API_KEY
 from app.generate_game_key import generate_game_key
-from app.game_logic import start_game
+from app.game_logic import *
+from app.work_with_keyboard import *
 
 bot = telebot.TeleBot(API_KEY)
 active_games = {}
@@ -35,82 +41,77 @@ def help(message: Message) -> None:
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/create'))
 def create(message: Message) -> None:
     user_id = message.from_user.id
-    user_name = message.from_user.username
-    game_key = generate_game_key()
-    if user_id not in active_games:
-        print(f'[+] {user_name} создал игру')
-        active_games[user_id] = game_key
+    user_name = message.from_user.username if message.from_user.username is not None else 'Анонимный игрок'
+
+    if is_user_in_game(user_id, active_games):
         bot.send_message(
             chat_id=message.chat.id,
-            text=f"✅ Игра создана!\n"
-                 f"🔑 Код: *{game_key}*\n"
-                 f"Отправь этот код другу, чтобы он присоединился!",
-            parse_mode="Markdown"
+            text="⚠️ Вы уже участвуете в другой игре."
         )
-    else:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="⚠️ Вы уже создали игру или участвуете в другой."
-        )
-
-
-def add_user(message: Message) -> None:
-    user_id = message.from_user.id
-    user_name_join = message.from_user.username
-    game_key_entered = message.text.strip()
-
-    if user_id in active_games:
-        bot.send_message(chat_id=message.chat.id, text="⚠️ Вы уже участвуете в игре.")
         return
 
-    active_games[user_id] = game_key_entered
-    opponent_found = False
+    game_key = generate_game_key()
+    active_games[game_key] = {
+        "players_id": [user_id],
+        "players_name": [user_name],
+        "board": start_game(),
+        "turn": user_id,
+        "symbols": {user_id: '❌'},
+        "messages": {}
+    }
 
-    for key, value in active_games.items():
-        if value.upper() == game_key_entered.upper() and key != user_id:
-            opponent_found = True
+    print(f'[+] {user_name} создал игру {game_key}')
 
-            bot.send_message(chat_id=key, text=f"👤 @{user_name_join} присоединился к вашей игре!")
-
-            board_str = '\n\n'.join('    '.join(row) for row in start_game())
-
-            bot.send_message(chat_id=key, text=board_str)
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=f"✅ Вы успешно подключились к игре *{game_key_entered.upper()}*",
-                parse_mode="Markdown"
-            )
-            bot.send_message(chat_id=message.chat.id, text=board_str)
-            print(f'[+] @{user_name_join} присоединился к игре {game_key_entered}')
-            break
-
-    if not opponent_found:
-        del active_games[user_id]
-        bot.send_message(chat_id=message.chat.id,
-                         text="❌ Игра с таким ключом не найдена или вы пытаетесь подключиться к своей игре.")
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=f"✅ Игра создана!\n"
+             f"🔑 Код: *{game_key}*\n"
+             f"Отправь этот код другу, чтобы он присоединился!",
+        parse_mode="Markdown"
+    )
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/join'))
 def join(message: Message) -> None:
     user_id = message.from_user.id
-    if user_id not in active_games:
-        if active_games:
-            games_list = "\n".join(game for game in active_games.values())
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=f"🎮 Активные игры:\n{games_list}\n\nВведите код игры, к которой хотите присоединиться:"
-            )
-            bot.register_next_step_handler(message, add_user)
-        else:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="📭 Сейчас нет активных игр"
-            )
+
+    if is_user_in_game(user_id, active_games):
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="⚠️ Вы уже участвуете в другой игре."
+        )
+        return
+
+    if active_games:
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        for game_key in active_games.keys():
+            btn = KeyboardButton(text=game_key)
+            keyboard.add(btn)
+
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="🎮 Выберете игру:",
+            reply_markup=keyboard
+        )
+        bot.register_next_step_handler(message, lambda msg: add_user(msg, bot, active_games))
+
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="⚠️ Вы уже создали игру или играете"
+            text="📭 Сейчас нет активных игр"
         )
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
+    callback_handler(
+        call,
+        bot,
+        active_games,
+        create_board_keyboard,
+        check_winner,
+        check_draw
+    )
 
 
 def main():
