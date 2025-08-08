@@ -3,7 +3,7 @@ from telebot.types import CallbackQuery
 from app.bot_instance import bot, active_games
 from app.utils import create_board_keyboard
 from app.game_logic import check_winner, check_draw
-from app.message_text import *
+from app.messages.message_text import WORST_DATA, GAME_NOT_FOUNDED, ANOTHER_MOVE, NOT_FREE_PLACE, YOU_WIN, YOU_LOSE, ALL_WIN
 
 
 def callback_handler(call: CallbackQuery):

@@ -2,7 +2,7 @@ from telebot.types import Message
 
 from app.bot_instance import bot, active_games
 from app.utils import is_user_in_game, create_board_keyboard
-from app.message_text import *
+from app.messages.message_text import YOU_IN_ANOTHER_GAME, GAME_NOT_FOUNDED, YOU_IN_THIS_GAME, FIRST_MOVE, SECOND_MOVE
 
 
 # Добавление пользователя в игру

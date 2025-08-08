@@ -1,15 +1,13 @@
 from telebot.types import Message
 from telebot.types import BotCommand
 
-from app.bot_instance import bot, active_games
-from app.create_game import create
-from app.join_game import join
-from app.delete_game import delete
-from app.work_with_inline import callback_handler
-from app.game_logic import *
-from app.add_user_in_game import *
-from app.message_text import *
-from app.utils import create_board_keyboard
+from bot_instance import bot
+from app.handlers.create_game import create
+from app.handlers.join_game import join
+from app.handlers.delete_game import delete
+from app.handlers.work_with_inline import callback_handler
+from app.handlers.add_user_in_game import add_user
+from app.messages.message_text import START_TEXT, HELP_TEXT, GITHUB_LINK_TEXT
 
 # Настройка списка команд для меню бота в Telegram
 commands = [

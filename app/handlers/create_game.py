@@ -3,8 +3,8 @@ from telebot.types import Message
 from app.bot_instance import bot, active_games
 from app.utils import generate_game_key
 from app.game_logic import start_game
-from app.add_user_in_game import is_user_in_game
-from app.message_text import YOU_IN_ANOTHER_GAME, YOU_CREATE_GAME
+from app.handlers.add_user_in_game import is_user_in_game
+from app.messages.message_text import YOU_IN_ANOTHER_GAME, YOU_CREATE_GAME
 
 
 # Функция для создания новой игры

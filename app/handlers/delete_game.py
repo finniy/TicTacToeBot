@@ -1,7 +1,7 @@
 from telebot.types import Message
 
 from app.bot_instance import bot, active_games
-from app.message_text import *
+from app.messages.message_text import NO_DELETE_GAME, YOUR_GAME_DELETED
 
 
 def delete(message: Message):
