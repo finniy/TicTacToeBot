@@ -113,6 +113,5 @@ def handle_callback(call):
         check_draw
     )
 
-
 def main():
     bot.polling(none_stop=True)
