@@ -36,11 +36,20 @@ def callback_handler(call: CallbackQuery):
 
     # Проверяем, выиграл ли текущий игрок после этого хода
     if check_winner(game['board'], symbol):
+        # Находим индекс игрока с победным символом
+        winner_index = None
+        for idx, pid in enumerate(game['players_id']):
+            if game['symbols'][pid] == symbol:
+                winner_index = idx
+                break
+
+        winner_name = game['players_name'][winner_index] if winner_index is not None else 'Анонимный игрок'
+
         for pid in game['players_id']:
             if pid == user_id:
                 bot.send_message(pid, YOU_WIN)
             else:
-                bot.send_message(pid, YOU_LOSE)
+                bot.send_message(pid, YOU_LOSE.format(winner_name))
         del active_games[game_key]
         bot.answer_callback_query(call.id)
         return
@@ -67,4 +76,4 @@ def callback_handler(call: CallbackQuery):
             if message_id:
                 bot.edit_message_reply_markup(chat_id=player_id, message_id=message_id, reply_markup=keyboard)
         except Exception:
-            pass  # игнорируем ошибки, например, если сообщение удалено
+            print(f'[!] {player_id} изменил сообщение!')

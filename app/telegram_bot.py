@@ -2,7 +2,7 @@ from telebot.types import Message
 from telebot.types import BotCommand
 from telebot.types import CallbackQuery
 
-from bot_instance import bot
+from app.bot_instance import bot
 from app.handlers.create_game import create
 from app.handlers.join_game import join
 from app.handlers.delete_game import delete
