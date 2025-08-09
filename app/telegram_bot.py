@@ -1,5 +1,6 @@
 from telebot.types import Message
 from telebot.types import BotCommand
+from telebot.types import CallbackQuery
 
 from bot_instance import bot
 from app.handlers.create_game import create
@@ -39,7 +40,7 @@ def send_my_github(message: Message) -> None:
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/delete'))
-def handle_delete(message):
+def handle_delete(message: Message) -> None:
     # Обрабатывает команду /leave — позволяет игроку удалить свою игру
     delete(message)
 
@@ -51,13 +52,13 @@ def handle_create(message: Message) -> None:
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/join'))
-def handle_join(message):
+def handle_join(message: Message) -> None:
     # Обрабатывает команду /join — показывает список игр и подключает игрока
     join(message, add_user)
 
 
 @bot.callback_query_handler(func=lambda call: True)
-def handle_callback(call):
+def handle_callback(call: CallbackQuery):
     # Обрабатывает нажатия на inline-кнопки
     callback_handler(call)
 
