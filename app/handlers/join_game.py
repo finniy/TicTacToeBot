@@ -2,7 +2,7 @@ from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
 from app.bot_instance import bot, active_games
 from app.handlers.add_user_in_game import is_user_in_game
-from app.messages.message_text import YOU_IN_ANOTHER_GAME, TAKE_GAME
+from app.messages.message_text import YOU_IN_ANOTHER_GAME, TAKE_GAME, NO_ACTIVE_GAME
 
 
 def join(message: Message, add_user):

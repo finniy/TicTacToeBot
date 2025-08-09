@@ -1,5 +1,6 @@
 from telebot.types import Message
 
+from app.logger import logger
 from app.bot_instance import bot, active_games
 from app.utils import is_user_in_game, create_board_keyboard
 from app.messages.message_text import YOU_IN_ANOTHER_GAME, GAME_NOT_FOUNDED, YOU_IN_THIS_GAME, FIRST_MOVE, SECOND_MOVE
@@ -70,5 +71,6 @@ def add_user(message: Message) -> None:
     }
 
     # Логи в консоль
-    print(f'[+] {joiner_user_name} присоединился к игре {game_key_entered}')
-    print(f'[+] Началась игра {game_key_entered}')
+    logger.info(f'{joiner_user_name} присоединился к игре {game_key_entered}')
+    logger.info(f'Началась игра {game_key_entered}')
+

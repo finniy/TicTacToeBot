@@ -3,7 +3,8 @@ from telebot.types import CallbackQuery
 from app.bot_instance import bot, active_games
 from app.utils import create_board_keyboard
 from app.game_logic import check_winner, check_draw
-from app.messages.message_text import WORST_DATA, GAME_NOT_FOUNDED, ANOTHER_MOVE, NOT_FREE_PLACE, YOU_WIN, YOU_LOSE, ALL_WIN
+from app.messages.message_text import WORST_DATA, GAME_NOT_FOUNDED, ANOTHER_MOVE, NOT_FREE_PLACE, YOU_WIN, YOU_LOSE, \
+    ALL_WIN
 
 
 def callback_handler(call: CallbackQuery):
@@ -34,6 +35,22 @@ def callback_handler(call: CallbackQuery):
     symbol = game['symbols'][user_id]  # символ (крестик или нолик) текущего игрока
     game['board'][row][col] = symbol
 
+    # Меняем очередь хода на другого игрока
+    players = game['players_id']
+    game['turn'] = players[1] if game['turn'] == players[0] else players[0]
+
+    # Создаем обновленную клавиатуру с игровым полем
+    keyboard = create_board_keyboard(game['board'], game_key)
+
+    # Обновляем у каждого игрока сообщение с игрой, чтобы отобразить ход
+    for player_id in players:
+        try:
+            message_id = game['messages'].get(player_id)
+            if message_id:
+                bot.edit_message_reply_markup(chat_id=player_id, message_id=message_id, reply_markup=keyboard)
+        except Exception:
+            pass
+
     # Проверяем, выиграл ли текущий игрок после этого хода
     if check_winner(game['board'], symbol):
         # Находим индекс игрока с победным символом
@@ -61,19 +78,3 @@ def callback_handler(call: CallbackQuery):
         del active_games[game_key]
         bot.answer_callback_query(call.id)
         return
-
-    # Меняем очередь хода на другого игрока
-    players = game['players_id']
-    game['turn'] = players[1] if game['turn'] == players[0] else players[0]
-
-    # Создаем обновленную клавиатуру с игровым полем
-    keyboard = create_board_keyboard(game['board'], game_key)
-
-    # Обновляем у каждого игрока сообщение с игрой, чтобы отобразить ход
-    for player_id in players:
-        try:
-            message_id = game['messages'].get(player_id)
-            if message_id:
-                bot.edit_message_reply_markup(chat_id=player_id, message_id=message_id, reply_markup=keyboard)
-        except Exception:
-            print(f'[!] {player_id} изменил сообщение!')

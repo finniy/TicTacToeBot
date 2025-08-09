@@ -1,5 +1,6 @@
 from telebot.types import Message
 
+from app.logger import logger
 from app.bot_instance import bot, active_games
 from app.utils import generate_game_key
 from app.game_logic import start_game
@@ -32,6 +33,6 @@ def create(message: Message) -> None:
         "symbols": {user_id: '❌'},
         "messages": {}
     }
-    bot.send_message(chat_id=message.chat.id, text=YOU_CREATE_GAME.format(game_key))
+    bot.send_message(chat_id=message.chat.id, text=YOU_CREATE_GAME.format(game_key), parse_mode='Markdown')
     # Лог в консоль
-    print(f'[+] {user_name} создал игру {game_key}')
+    logger.info(f'{user_name} создал игру {game_key}')

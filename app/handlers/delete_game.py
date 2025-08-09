@@ -1,5 +1,6 @@
 from telebot.types import Message
 
+from app.logger import logger
 from app.bot_instance import bot, active_games
 from app.messages.message_text import NO_DELETE_GAME, YOUR_GAME_DELETED
 
@@ -27,4 +28,4 @@ def delete(message: Message):
         chat_id=message.chat.id,
         text=YOUR_GAME_DELETED.format(game_key_to_remove)
     )
-    print(f'[+] Игра {game_key_to_remove} удалена создателем {user_id}')
+    logger.info(f'Игра {game_key_to_remove} удалена создателем!')
