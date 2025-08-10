@@ -1,5 +1,5 @@
 def start_game() -> list:
-    # Создание пустого поля
+    """Создаёт и возвращает пустое игровое поле 3x3."""
     matrix = []
     for _ in range(3):
         row = ['⬜️'] * 3
@@ -8,6 +8,7 @@ def start_game() -> list:
 
 
 def make_move(board: list, row: int, col: int, player_symbol: str) -> bool | list:
+    """Выполняет ход игрока, если клетка свободна; возвращает обновлённое поле или False."""
     if board[row][col] == '⬜️':
         board[row][col] = player_symbol
         return board
@@ -15,7 +16,7 @@ def make_move(board: list, row: int, col: int, player_symbol: str) -> bool | lis
 
 
 def check_winner(board: list, player_symbol: str) -> bool:
-    # Проверка победы игрока (3 в ряд по горизонтали, вертикали, диагонали)
+    """Проверяет, есть ли у игрока победа (3 в ряд по горизонтали, вертикали или диагонали)."""
     lines = []
 
     # строки и столбцы
@@ -33,7 +34,7 @@ def check_winner(board: list, player_symbol: str) -> bool:
 
 
 def check_draw(board: list) -> bool:
-    # Проверка ничьи — нет пустых клеток и нет победителя
+    """Проверяет, что ничья — нет пустых клеток на поле."""
     for row in board:
         if '⬜️' in row:
             return False

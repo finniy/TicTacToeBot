@@ -12,6 +12,11 @@ from app.messages.message_text import YOU_IN_ANOTHER_GAME, YOU_CREATE_GAME
 
 # Функция для создания новой игры
 def create(message: Message) -> None:
+    """
+    Создаёт новую игру с уникальным кодом, добавляет её в активные игры,
+    отправляет сообщение создателю и запускает таймер автоудаления игры через 3 минуты,
+    если к ней не присоединится второй игрок.
+    """
     user_id = message.from_user.id
     user_name = message.from_user.username if message.from_user.username else 'Анонимный игрок'
 

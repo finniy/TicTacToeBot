@@ -8,6 +8,10 @@ from app.messages.message_text import WORST_DATA, GAME_NOT_FOUNDED, ANOTHER_MOVE
 
 
 def callback_handler(call: CallbackQuery):
+    """
+    Обрабатывает нажатия на inline-кнопки игрового поля:
+    обновляет состояние игры, проверяет победу или ничью, переключает ход и оповещает игроков.
+    """
     data = call.data  # данные из нажатой inline-кнопки
 
     try:

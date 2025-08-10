@@ -7,8 +7,10 @@ from app.utils.user_in_game import is_user_in_all_game
 from app.messages.message_text import YOU_IN_ANOTHER_GAME, GAME_NOT_FOUNDED, YOU_IN_THIS_GAME, FIRST_MOVE, SECOND_MOVE
 
 
-# Добавление пользователя в игру
 def add_user(message: Message) -> None:
+    """
+       Добавляет пользователя в игру по коду игры, проверяет условия и отправляет уведомления.
+       """
     user_id = message.from_user.id  # ID присоединившегося пользователя
     game_key_entered = message.text.strip().upper()  # Код игры, введённый пользователем
     joiner_user_name = message.from_user.username if message.from_user.username else 'Анонимный игрок'
@@ -74,4 +76,3 @@ def add_user(message: Message) -> None:
     # Логи в консоль
     logger.info(f'{joiner_user_name} присоединился к игре {game_key_entered}')
     logger.info(f'Началась игра {game_key_entered}')
-

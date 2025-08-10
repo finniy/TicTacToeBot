@@ -2,7 +2,7 @@ from app.bot_instance import active_games
 from app.logger import logger
 
 
-def auto_delete_game(game_key):
+def auto_delete_game(game_key: str) -> None:
     """Удаляет игру, если в ней до сих пор один игрок."""
     game = active_games.get(game_key)
     if game and len(game["players_id"]) == 1:

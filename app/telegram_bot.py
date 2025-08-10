@@ -21,41 +21,41 @@ commands = [
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/start'))
 def start(message: Message) -> None:
-    # Обрабатывает команду /start — отправляет приветственное сообщение
+    """Обрабатывает /start — приветствие пользователю."""
     bot.send_message(message.chat.id, START_TEXT, parse_mode="Markdown")
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/help'))
 def help(message: Message) -> None:
-    # Обрабатывает команду /help — отправляет список команд и инструкцию
+    """Обрабатывает /help — показывает инструкции и список команд."""
     bot.send_message(message.chat.id, HELP_TEXT, parse_mode="Markdown")
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/github'))
 def send_my_github(message: Message) -> None:
-    # Обрабатывает команду /github — отправляет ссылку на исходный код бота
+    """Обрабатывает /github — отправляет ссылку на GitHub проекта."""
     bot.send_message(message.chat.id, GITHUB_LINK_TEXT)
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/create'))
 def handle_create(message: Message) -> None:
-    # Обрабатывает команду /create — создаёт новую игру
+    """Обрабатывает /create — создаёт новую игру."""
     create(message)
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/join'))
 def handle_join(message: Message) -> None:
-    # Обрабатывает команду /join — показывает список игр и подключает игрока
+    """Обрабатывает /join — показывает список игр и подключает игрока."""
     join(message, add_user)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call: CallbackQuery):
-    # Обрабатывает нажатия на inline-кнопки
+    """Обрабатывает нажатия на inline-кнопки."""
     callback_handler(call)
 
 
 def main():
-    # Запускает бота в режиме постоянного опроса Telegram API
+    """Запускает бота и устанавливает команды меню Telegram."""
     bot.set_my_commands(commands)
     bot.polling(none_stop=True)

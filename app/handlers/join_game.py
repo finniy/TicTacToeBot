@@ -7,6 +7,10 @@ from app.utils.utils import take_game_key
 
 
 def join(message: Message, add_user):
+    """
+    Позволяет пользователю выбрать и присоединиться к активной игре,
+    проверяя, не участвует ли он уже в другой, и удаляя его старую игру при необходимости.
+    """
     user_id = message.from_user.id
 
     if is_user_in_another_game(user_id):  # проверяем, есть ли пользователь другой игре
