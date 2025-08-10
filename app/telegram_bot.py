@@ -1,13 +1,12 @@
-from telebot.types import Message
 from telebot.types import BotCommand
 from telebot.types import CallbackQuery
+from telebot.types import Message
 
 from app.bot_instance import bot
+from app.handlers.add_user_in_game import add_user
 from app.handlers.create_game import create
 from app.handlers.join_game import join
-from app.handlers.delete_game import delete
 from app.handlers.work_with_inline import callback_handler
-from app.handlers.add_user_in_game import add_user
 from app.messages.message_text import START_TEXT, HELP_TEXT, GITHUB_LINK_TEXT
 
 # Настройка списка команд для меню бота в Telegram
@@ -16,7 +15,6 @@ commands = [
     BotCommand("help", "Список команд и инструкция"),
     BotCommand("create", "Создать новую игру"),
     BotCommand("join", "Присоединиться к игре"),
-    BotCommand("delete", "Удалить свою игру"),
     BotCommand("github", "Ссылка на GitHub проекта")
 ]
 
@@ -37,12 +35,6 @@ def help(message: Message) -> None:
 def send_my_github(message: Message) -> None:
     # Обрабатывает команду /github — отправляет ссылку на исходный код бота
     bot.send_message(message.chat.id, GITHUB_LINK_TEXT)
-
-
-@bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/delete'))
-def handle_delete(message: Message) -> None:
-    # Обрабатывает команду /leave — позволяет игроку удалить свою игру
-    delete(message)
 
 
 @bot.message_handler(func=lambda m: m.text and m.text.lower().startswith('/create'))
