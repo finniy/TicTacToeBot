@@ -2,15 +2,8 @@ import random
 import string
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from app.bot_instance import active_games
-
-
-# Проверяем, участвует ли пользователь в активной игре
-def is_user_in_game(user_id: int) -> bool:
-    for game in active_games.values():
-        if user_id in game["players_id"]:  # если пользователь в списке игроков
-            return True
-    return False
 
 
 # Генерируем уникальный ключ игры из заглавных букв и цифр
@@ -31,3 +24,8 @@ def create_board_keyboard(board, game_key):
             row_buttons.append(btn)
         keyboard.add(*row_buttons)
     return keyboard
+
+def take_game_key(user_id):
+    for key, value in active_games.items():
+        if value['players_id'][0] == user_id:
+            return key

@@ -2,7 +2,8 @@ from telebot.types import Message
 
 from app.logger import logger
 from app.bot_instance import bot, active_games
-from app.utils.utils import is_user_in_game, create_board_keyboard
+from app.utils.utils import create_board_keyboard
+from app.utils.user_in_game import is_user_in_all_game
 from app.messages.message_text import YOU_IN_ANOTHER_GAME, GAME_NOT_FOUNDED, YOU_IN_THIS_GAME, FIRST_MOVE, SECOND_MOVE
 
 
@@ -13,7 +14,7 @@ def add_user(message: Message) -> None:
     joiner_user_name = message.from_user.username if message.from_user.username else 'Анонимный игрок'
 
     # Если пользователь уже играет — отказ
-    if is_user_in_game(user_id):
+    if is_user_in_all_game(user_id):
         bot.send_message(
             chat_id=message.chat.id,
             text=YOU_IN_ANOTHER_GAME
@@ -21,7 +22,7 @@ def add_user(message: Message) -> None:
         return
 
     # Проверка, существует ли игра с введённым ключом
-    if game_key_entered not in active_games:
+    if len(game_key_entered) != 6 and game_key_entered not in active_games:
         bot.send_message(
             chat_id=message.chat.id,
             text=GAME_NOT_FOUNDED
