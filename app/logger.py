@@ -13,7 +13,7 @@ class ColorFormatter(logging.Formatter):
         return msg  # для других уровней без цвета
 
 logger = logging.getLogger('tictactoe_bot')
-logger.setLevel(logging.DEBUG)  # можно менять на INFO
+logger.setLevel(logging.DEBUG)
 
 formatter = ColorFormatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
