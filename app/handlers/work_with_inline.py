@@ -5,6 +5,12 @@ from app.utils.utils import create_board_keyboard
 from app.utils.game_logic import check_winner, check_draw
 from app.messages.message_text import WORST_DATA, GAME_NOT_FOUNDED, ANOTHER_MOVE, NOT_FREE_PLACE, YOU_WIN, YOU_LOSE, \
     ALL_WIN
+from app.database.players import PlayerDB
+from app.database.game import GameDB
+from app.logger import logger
+
+players_db = PlayerDB()
+games_db = GameDB()
 
 
 def callback_handler(call: CallbackQuery):
@@ -65,6 +71,15 @@ def callback_handler(call: CallbackQuery):
                 break
 
         winner_name = game['players_name'][winner_index] if winner_index is not None else 'Анонимный игрок'
+        winner_id = game['players_id'][winner_index]
+        loser_id = game['players_id'][1 - winner_index]
+
+        players_db.update_stats(winner_id, won=True)
+        players_db.update_stats(loser_id, lost=True)
+        players_db.update_elo_game(winner_id=winner_id, loser_id=loser_id, draw=False)
+
+        games_db.add_game(game_key, game['players_id'][0], game['players_id'][1], winner_id)
+        logger.info(f'Игра {game_key} добавлена в бд')
 
         for pid in game['players_id']:
             if pid == user_id:
@@ -77,6 +92,13 @@ def callback_handler(call: CallbackQuery):
 
     # Проверяем, есть ли ничья (все клетки заняты, но победителя нет)
     if check_draw(game['board']):
+        players_db.update_stats(game['players_id'][0], draw=True)
+        players_db.update_stats(game['players_id'][1], draw=True)
+        players_db.update_elo_game(winner_id=game['players_id'][0], loser_id=game['players_id'][1], draw=True)
+
+        games_db.add_game(game_key, game['players_id'][0], game['players_id'][1], 'draw')
+        logger.info(f'Игра {game_key} добавлена в бд')
+
         for pid in game['players_id']:
             bot.send_message(pid, ALL_WIN)  # сообщаем о ничьей
         del active_games[game_key]
