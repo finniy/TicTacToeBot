@@ -93,7 +93,8 @@ TicTacToeBot/
 │ └── delete_game.py
 ├── images/
 │   ├── Photo1.png
-│   └── Photo2.png
+│   ├── Photo2.png
+│   └── Photo3.png
 ├── .env
 ├── .env.template
 ├── .gitignore
@@ -122,9 +123,14 @@ TicTacToeBot/
 Используется система рейтинга Эло ⭐, которая автоматически корректирует рейтинг игроков после каждой партии в
 зависимости от результата и уровня соперника.
 
+---
+
 ## 📸 Примеры работы бота
 
-Скоро...
+<img src="images/Photo1.png" width="600" style="display: block; margin: auto;">
+
+<img src="images/Photo2.png" width="600" style="display: block; margin: auto;">
+
 
 ## 📄 Лицензия
 
@@ -133,6 +139,8 @@ TicTacToeBot/
 ---
 
 ## 👤 Автор
+
+🚀 **[Перейти к боту в Telegram](https://t.me/XOpy_bot)**
 
 - GitHub: [@finniy](https://github.com/finniy)
 - Telegram: [@fjnnjk](https://t.me/fjnnjk)
