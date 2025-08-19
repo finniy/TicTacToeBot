@@ -67,7 +67,6 @@ python main.py
 ``` 
 TicTacToeBot/
 ├── app/
-│ ├── init.py
 │ ├── bot_instance.py
 │ ├── config.py
 │ ├── logger.py
@@ -93,8 +92,7 @@ TicTacToeBot/
 │ └── delete_game.py
 ├── images/
 │   ├── Photo1.png
-│   ├── Photo2.png
-│   └── Photo3.png
+│   └── Photo2.png
 ├── .env
 ├── .env.template
 ├── .gitignore
